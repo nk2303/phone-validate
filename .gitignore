@@ -1,0 +1,32 @@
+
+# dependencies
+phone-access-react/node_modules
+phone-access-react/.pnp
+phone-access-react/.pnp.js
+# testing
+phone-access-react/coverage
+# production
+phone-access-react//build
+# misc
+phone-access-react/.DS_Store
+phone-access-react/.env.local
+phone-access-react/.env.development.local
+phone-access-react/.env.test.local
+phone-access-react/.env.production.local
+phone-access-react/npm-debug.log*
+phone-access-react/yarn-debug.log*
+phone-access-react/yarn-error.log*
+
+# Ignore bundler config.
+phone-access-express/.bundle
+# Ignore all logfiles and tempfiles.
+phone-access-express/log/*
+phone-access-express/tmp/*
+phone-access-express!/log/.keep
+phone-access-express!/tmp/.keep
+# Ignore uploaded files in development.
+phone-access-express/storage/*
+phone-access-express!/storage/.keep
+phone-access-express.byebug_history
+# Ignore master key for decrypting credentials and more.
+phone-access-express/config/master.key
