@@ -32,16 +32,14 @@ app.post('/api/phone', urlencodedParser, (req, res) => {
 });
 
 app.post('/api/access', urlencodedParser, (req, res) => {
-    console.log('ACCESSCODE body: ', req.body)
     (async () => {
-        // try {
-        //   await db.collection('items').doc('/' + req.body.phoneNumber + '/')
-        //       .create({item: req.body.phoneNumber});
-        //   return res.status(200).send();
-        // } catch (error) {
-        //   console.log(error);
-        //   return res.status(500).send(error);
-        // }
+        try {
+            let validate = ValidateAccessCode(req.body.phoneNumber, req.body.accessCode)
+            return res.status(200).send(validate);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send(error);
+        }
     })();
 });
 
@@ -54,11 +52,16 @@ const CreateNewAccessCode = (phoneNumber) => {
     var minm = 10000; 
     var maxm = 99999; 
     let accessCode = Math.floor(Math.random() * (maxm - minm + 1)) + minm; 
-    //save this code into database
-    
     return {phoneNumber, accessCode}
 }
 
 const ValidateAccessCode =(phoneNumber, accessCode) => {
-
+    const document = db.collection('items').doc(phoneNumber);        
+    let item = await document.get();
+    let response = item.data();
+    if (response.item.accessCode == accessCode) {
+        return { success: true }
+    } else {
+        return { success: false }
+    }
 }
