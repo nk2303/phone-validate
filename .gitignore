@@ -63,7 +63,7 @@ phone-access-express/.lock-wscript
 phone-access-express/build/Release
 
 # Dependency directories
-# phone-access-express/node_modules/
+phone-access-express/node_modules/
 
 # Optional npm cache directory
 phone-access-express/.npm
