@@ -31,14 +31,11 @@ app.post('/api/phone', urlencodedParser, (req, res) => {
 });
 
 app.post('/api/access', urlencodedParser, (req, res) => {
-    console.log("MAMAMA", req)
     (async () => {
         try {
             let validate = await ValidateAccessCode(req.body.phoneNumber, req.body.accessCode);
-            console.log("HEREeeeee",validate)
             return res.status(200).send(validate);
         } catch (error) {
-            console.log("FOUND FUNNY BUG",error);
             return res.status(500).send(error);
         }
     })();
