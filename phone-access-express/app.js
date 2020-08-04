@@ -6,7 +6,6 @@ var bodyParser = require('body-parser')
 app.use(cors());
 app.use(bodyParser.json());
 
-
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -15,12 +14,14 @@ require('dotenv').config();
 
 var twilio = require('twilio');
 var client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-client.messages.create({
-    to: '+13609610287',
-    from: process.env.TWILIO_NUMBER,
-    body: 'You have been selected to be given $5000 after we heard you lost $2000 in stock!'
-  });
-
+const sendAccessCode = (phoneNumber, accessCode) => {
+    console.log(phoneNumber)
+    client.messages.create({
+        to: phoneNumber,
+        from: process.env.TWILIO_NUMBER,
+        body: `This is your access code: ${accessCode}`
+      });
+}
 
 var serviceAccount = require('./phone-validati0n');
 
@@ -33,9 +34,10 @@ const db = admin.firestore();
 app.post('/api/phone', urlencodedParser, (req, res) => {
     (async () => {
         try {
-            await db.collection('items').doc('/' + req.body.phoneNumber + '/')
-              .create({item: CreateNewAccessCode(req.body.phoneNumber)});
-          return res.status(200).send();
+            const object = CreateNewAccessCode(req.body.phoneNumber);
+            await db.collection('items').doc('/' + req.body.phoneNumber + '/').create({item: object});
+            sendAccessCode(object.phoneNumber, object.accessCode);
+            return res.status(200).send();
         } catch (error) {
           console.log(error);
           return res.status(500).send(error);
