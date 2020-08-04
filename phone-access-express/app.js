@@ -31,13 +31,14 @@ app.post('/api/phone', urlencodedParser, (req, res) => {
 });
 
 app.post('/api/access', urlencodedParser, (req, res) => {
+    console.log("MAMAMA", req)
     (async () => {
         try {
-            let validate = ValidateAccessCode(req.body.phoneNumber, req.body.accessCode);
+            let validate = await ValidateAccessCode(req.body.phoneNumber, req.body.accessCode);
             console.log("HEREeeeee",validate)
             return res.status(200).send(validate);
         } catch (error) {
-            console.log(error);
+            console.log("FOUND FUNNY BUG",error);
             return res.status(500).send(error);
         }
     })();
@@ -55,7 +56,7 @@ const CreateNewAccessCode = (phoneNumber) => {
     return {phoneNumber, accessCode}
 }
 
-const ValidateAccessCode =(phoneNumber, accessCode) => {
+const ValidateAccessCode = async(phoneNumber, accessCode) => {
     const document = db.collection('items').doc(phoneNumber);        
     let item = await document.get();
     let response = item.data();
