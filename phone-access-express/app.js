@@ -6,8 +6,21 @@ var bodyParser = require('body-parser')
 app.use(cors());
 app.use(bodyParser.json());
 
+
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
+
+///start of twillo code
+require('dotenv').config();
+
+var twilio = require('twilio');
+var client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+client.messages.create({
+    to: '+13609610287',
+    from: process.env.TWILIO_NUMBER,
+    body: 'You have been selected to be given $5000 after we heard you lost $2000 in stock!'
+  });
+
 
 var serviceAccount = require('./phone-validati0n');
 
