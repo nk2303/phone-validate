@@ -7,7 +7,7 @@ router.post("/api/v1/phone", (req, res, next) => {
    });
 
 router.post("/", function (req, res) {
-    res.send('root')
+    res.send('root');
   })
 
 router.get("/api/v1/access", (req, res, next) => {

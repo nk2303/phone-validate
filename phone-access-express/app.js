@@ -2,7 +2,13 @@ var express = require("express");
 var app = express();
 var admin = require("firebase-admin");
 var cors = require("cors");
+var bodyParser = require('body-parser')
 app.use(cors());
+app.use(bodyParser.json());
+
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+
 
 var serviceAccount = require('./phone-validati0n');
 
@@ -12,12 +18,14 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-app.post('/api/phone', (req, res) => {
-    console.log('body: ', req.body);
+app.post('/api/phone', urlencodedParser, (req, res) => {
+    const {phoneNumber} = req.body
+    console.log('CAT HEADERs', req.headers);
+    console.log('CAT body: ', req.body)
     (async () => {
         try {
-          await db.collection('items').doc('/' + '3602236419' + '/')
-              .create({item: '3602236419', accessCode: 'asdasdasdsd'});
+          await db.collection('items').doc('/' + req.body.phoneNumber + '/')
+              .create({item: req.body.phoneNumber});
           return res.status(200).send();
         } catch (error) {
           console.log(error);
