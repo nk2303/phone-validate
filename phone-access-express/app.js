@@ -9,7 +9,6 @@ app.use(bodyParser.json());
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-
 var serviceAccount = require('./phone-validati0n');
 
 admin.initializeApp({
@@ -34,7 +33,8 @@ app.post('/api/phone', urlencodedParser, (req, res) => {
 app.post('/api/access', urlencodedParser, (req, res) => {
     (async () => {
         try {
-            let validate = ValidateAccessCode(req.body.phoneNumber, req.body.accessCode)
+            let validate = ValidateAccessCode(req.body.phoneNumber, req.body.accessCode);
+            console.log("HEREeeeee",validate)
             return res.status(200).send(validate);
         } catch (error) {
             console.log(error);
@@ -59,7 +59,7 @@ const ValidateAccessCode =(phoneNumber, accessCode) => {
     const document = db.collection('items').doc(phoneNumber);        
     let item = await document.get();
     let response = item.data();
-    if (response.item.accessCode == accessCode) {
+    if (parseInt(response.item.accessCode) == accessCode) {
         return { success: true }
     } else {
         return { success: false }
