@@ -19,21 +19,46 @@ admin.initializeApp({
 const db = admin.firestore();
 
 app.post('/api/phone', urlencodedParser, (req, res) => {
-    const {phoneNumber} = req.body
-    console.log('CAT HEADERs', req.headers);
-    console.log('CAT body: ', req.body)
     (async () => {
         try {
-          await db.collection('items').doc('/' + req.body.phoneNumber + '/')
-              .create({item: req.body.phoneNumber});
+            await db.collection('items').doc('/' + req.body.phoneNumber + '/')
+              .create({item: CreateNewAccessCode(req.body.phoneNumber)});
           return res.status(200).send();
         } catch (error) {
           console.log(error);
           return res.status(500).send(error);
         }
-      })();
-  });
+    })();
+});
+
+app.post('/api/access', urlencodedParser, (req, res) => {
+    console.log('ACCESSCODE body: ', req.body)
+    (async () => {
+        // try {
+        //   await db.collection('items').doc('/' + req.body.phoneNumber + '/')
+        //       .create({item: req.body.phoneNumber});
+        //   return res.status(200).send();
+        // } catch (error) {
+        //   console.log(error);
+        //   return res.status(500).send(error);
+        // }
+    })();
+});
+
 
 app.listen(3000, () => {
  console.log("Server running on port 3000");
 });
+
+const CreateNewAccessCode = (phoneNumber) => {
+    var minm = 10000; 
+    var maxm = 99999; 
+    let accessCode = Math.floor(Math.random() * (maxm - minm + 1)) + minm; 
+    //save this code into database
+    
+    return {phoneNumber, accessCode}
+}
+
+const ValidateAccessCode =(phoneNumber, accessCode) => {
+
+}
