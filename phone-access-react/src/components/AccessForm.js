@@ -11,7 +11,7 @@ const AccessForm = () => {
 
     const submitPhoneHandler = e => {
         e.preventDefault();
-        api.getPhoneNumber(phoneNumber);
+        api.getPhoneNumber(phoneNumber)
         setIsPhoneSubmitted(true);
     }
 
@@ -30,7 +30,7 @@ const AccessForm = () => {
 
     return (
         <div>
-        { validated ? <h1>Validate Success!</h1> : null }    
+        { validated ? <h1>Validate Success!</h1> : null }   
         <form onSubmit={submitPhoneHandler}>
             <div>
                 <label>Enter your phone number: </label>

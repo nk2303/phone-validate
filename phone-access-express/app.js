@@ -5,21 +5,19 @@ var cors = require("cors");
 var bodyParser = require('body-parser')
 app.use(cors());
 app.use(bodyParser.json());
-
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
-
-///start of twillo code
+const phone = require('phone');
+var twilio = require('twilio');
 require('dotenv').config();
 
-var twilio = require('twilio');
+
 var client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const sendAccessCode = (phoneNumber, accessCode) => {
-    console.log(phoneNumber)
     client.messages.create({
         to: phoneNumber,
         from: process.env.TWILIO_NUMBER,
-        body: `This is your access code: ${accessCode}`
+        body: `Your access code: ${accessCode}`
       });
 }
 
@@ -32,17 +30,22 @@ admin.initializeApp({
 const db = admin.firestore();
 
 app.post('/api/phone', urlencodedParser, (req, res) => {
-    (async () => {
-        try {
-            const object = CreateNewAccessCode(req.body.phoneNumber);
-            await db.collection('items').doc('/' + req.body.phoneNumber + '/').create({item: object});
-            sendAccessCode(object.phoneNumber, object.accessCode);
-            return res.status(200).send();
-        } catch (error) {
-          console.log(error);
-          return res.status(500).send(error);
-        }
-    })();
+    if (phone(req.body.phoneNumber)[0]) {
+        (async () => {
+            try {
+                const object = CreateNewAccessCode(phone(req.body.phoneNumber)[0]);
+
+                db.collection('items').ref('/' + object.phoneNumber + '/').set({item: object});
+                // await db.collection('items').doc('/' + object.phoneNumber + '/').create({item: object});
+                sendAccessCode(object.phoneNumber, object.accessCode);
+                return res.status(200).send();
+            } catch (error) {
+              console.log(error);
+              return res.status(500).send(error);
+            }
+        })();
+    } else { return res.status(500).send(); }
+    
 });
 
 app.post('/api/access', urlencodedParser, (req, res) => {
