@@ -1,4 +1,5 @@
 var express = require("express");
+var serviceAccount = require('./phone-validati0n');
 var app = express();
 var admin = require("firebase-admin");
 var cors = require("cors");
@@ -21,8 +22,6 @@ const sendAccessCode = (phoneNumber, accessCode) => {
       });
 }
 
-var serviceAccount = require('./phone-validati0n');
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://phone-validati0n.firebaseio.com"
@@ -42,7 +41,7 @@ app.post('/api/phone', urlencodedParser, (req, res) => {
               return res.status(500).send(error);
             }
         })();
-    } else { return res.status(500).send(); }
+    } else { return res.status(500).send('Invalid Phone Number'); }
     
 });
 
@@ -74,7 +73,6 @@ const ValidateAccessCode = async(phoneNumber, accessCode) => {
     const pN = phone(phoneNumber)[0];
     const document = db.collection('items').doc(pN);  
     let item = await document.get();
-    console.log(accessCode)
     let response = item.data();
     if (response.accessCode == accessCode) {
         return { success: true }
