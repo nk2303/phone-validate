@@ -1,3 +1,0 @@
-const CreateNewAccessCode = () => {}
-
-const SendAccessCode = () => {}

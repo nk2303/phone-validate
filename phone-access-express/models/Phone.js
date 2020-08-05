@@ -1,3 +1,0 @@
-const SavePhoneNumber = () => {}
-
-const SearchPhoneNumber = () => {}

@@ -34,12 +34,11 @@ app.post('/api/phone', urlencodedParser, (req, res) => {
         (async () => {
             try {
                 const object = CreateNewAccessCode(phone(req.body.phoneNumber)[0]);
-                await db.collection('items').doc('/' + object.phoneNumber + '/').set({item: object}, {merge: true});
-                // await db.collection('items').doc('/' + object.phoneNumber + '/').create({item: object});
+                await db.collection('items').doc('/' + object.phoneNumber + '/')
+                    .set(object, {merge: true});
                 sendAccessCode(object.phoneNumber, object.accessCode);
-                return res.status(200).send();
+                return res.status(200).send(object.phoneNumber);
             } catch (error) {
-              console.log(error);
               return res.status(500).send(error);
             }
         })();
@@ -51,7 +50,7 @@ app.post('/api/access', urlencodedParser, (req, res) => {
     (async () => {
         try {
             let validate = await ValidateAccessCode(req.body.phoneNumber, req.body.accessCode);
-            return res.status(200).send(validate);
+            return res.status(200).send(validate.success);
         } catch (error) {
             return res.status(500).send(error);
         }
@@ -64,17 +63,20 @@ app.listen(3000, () => {
 });
 
 const CreateNewAccessCode = (phoneNumber) => {
-    var minm = 10000; 
-    var maxm = 99999; 
-    let accessCode = Math.floor(Math.random() * (maxm - minm + 1)) + minm; 
+    var minm = 100000; 
+    var maxm = 999999; 
+    let num = Math.floor(Math.random() * (maxm - minm + 1)) + minm; 
+    let accessCode = num.toString();
     return {phoneNumber, accessCode}
 }
 
 const ValidateAccessCode = async(phoneNumber, accessCode) => {
-    const document = db.collection('items').doc(phoneNumber);        
+    const pN = phone(phoneNumber)[0];
+    const document = db.collection('items').doc(pN);  
     let item = await document.get();
+    console.log(accessCode)
     let response = item.data();
-    if (parseInt(response.item.accessCode) == accessCode) {
+    if (response.accessCode == accessCode) {
         return { success: true }
     } else {
         return { success: false }
