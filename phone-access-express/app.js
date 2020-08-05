@@ -34,8 +34,7 @@ app.post('/api/phone', urlencodedParser, (req, res) => {
         (async () => {
             try {
                 const object = CreateNewAccessCode(phone(req.body.phoneNumber)[0]);
-
-                db.collection('items').ref('/' + object.phoneNumber + '/').set({item: object});
+                await db.collection('items').doc('/' + object.phoneNumber + '/').set({item: object}, {merge: true});
                 // await db.collection('items').doc('/' + object.phoneNumber + '/').create({item: object});
                 sendAccessCode(object.phoneNumber, object.accessCode);
                 return res.status(200).send();
