@@ -5,7 +5,7 @@ var admin = require("firebase-admin");
 var cors = require("cors");
 var bodyParser = require('body-parser')
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json());phone-validati0n
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 const phone = require('phone');
@@ -13,11 +13,11 @@ var twilio = require('twilio');
 require('dotenv').config();
 
 
-var client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+var client = new twilio('AC47f4e946f8218f0d5796dbde400ab89a', 'e769719f0802f4d03d4f09e89af27059');
 const sendAccessCode = (phoneNumber, accessCode) => {
     client.messages.create({
         to: phoneNumber,
-        from: process.env.TWILIO_NUMBER,
+        from: '+15127143436',
         body: `Your access code: ${accessCode}`
       });
 }
@@ -28,9 +28,9 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-app.post('/api/phone', urlencodedParser, (req, res) => {
+app.post('/phone', urlencodedParser, async (req, res) => {
     if (phone(req.body.phoneNumber)[0]) {
-        (async () => {
+        return await (async () => {
             try {
                 const object = CreateNewAccessCode(phone(req.body.phoneNumber)[0]);
                 await db.collection('items').doc('/' + object.phoneNumber + '/')
@@ -45,8 +45,8 @@ app.post('/api/phone', urlencodedParser, (req, res) => {
     
 });
 
-app.post('/api/access', urlencodedParser, (req, res) => {
-    (async () => {
+app.post('/access', urlencodedParser, async (req, res) => {
+    return await (async () => {
         try {
             let validate = await ValidateAccessCode(req.body.phoneNumber, req.body.accessCode);
             return res.status(200).send(validate.success);
@@ -54,11 +54,6 @@ app.post('/api/access', urlencodedParser, (req, res) => {
             return res.status(500).send(error);
         }
     })();
-});
-
-
-app.listen(3000, () => {
- console.log("Server running on port 3000");
 });
 
 const CreateNewAccessCode = (phoneNumber) => {
@@ -74,9 +69,11 @@ const ValidateAccessCode = async(phoneNumber, accessCode) => {
     const document = db.collection('items').doc(pN);  
     let item = await document.get();
     let response = item.data();
-    if (response.accessCode == accessCode) {
+    if (response.accessCode === accessCode) {
         return { success: true }
     } else {
         return { success: false }
     }
 }
+
+module.exports = app;
