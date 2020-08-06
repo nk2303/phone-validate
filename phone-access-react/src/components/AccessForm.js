@@ -11,13 +11,13 @@ const AccessForm = () => {
 
     const submitPhoneHandler = e => {
         e.preventDefault();
-        api.getPhoneNumber(phoneNumber)
+        api.getPhoneNumber(phoneNumber);
         setIsPhoneSubmitted(true);
     }
 
     const submitCodeHandler = e => {
         e.preventDefault();
-        api.validateCode(phoneNumber, accessCode).then(resp => setValidated(true));
+        api.validateCode(phoneNumber, accessCode).then(resp => setValidated(resp))
     }
 
     const handlePhoneChange = e => {
@@ -33,7 +33,7 @@ const AccessForm = () => {
         { validated ? <h1>Validate Success!</h1> : null }   
         <form onSubmit={submitPhoneHandler}>
             <div>
-                <label>Enter your phone number: </label>
+                <p>Enter your phone number: </p>
                 <input type="text" name="phoneNumber" placeholder="Phone number..." value={phoneNumber} onChange={handlePhoneChange}/>
             </div>
         </form>
@@ -41,7 +41,7 @@ const AccessForm = () => {
         { isPhoneSubmitted ?
             <form onSubmit={submitCodeHandler}>
                 <div>
-                    <label>Enter access code that was sent to your phone: </label>
+                    <p>Enter access code that was sent to your phone: </p>
                     <input type="text" name="accessCode" placeholder="Access code..." value={accessCode} onChange={handleCodeChange}/>
                 </div>
             </form>
