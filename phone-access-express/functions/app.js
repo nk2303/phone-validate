@@ -5,19 +5,19 @@ var admin = require("firebase-admin");
 var cors = require("cors");
 var bodyParser = require('body-parser')
 app.use(cors());
-app.use(bodyParser.json());phone-validati0n
+app.use(bodyParser.json());
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 const phone = require('phone');
 var twilio = require('twilio');
 require('dotenv').config();
 
-
-var client = new twilio('AC47f4e946f8218f0d5796dbde400ab89a', 'e769719f0802f4d03d4f09e89af27059');
+var client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const sendAccessCode = (phoneNumber, accessCode) => {
+    console.log(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN, process.env.TWILIO_NUMBER)
     client.messages.create({
         to: phoneNumber,
-        from: '+15127143436',
+        from: process.env.TWILIO_NUMBER,
         body: `Your access code: ${accessCode}`
       });
 }
@@ -29,6 +29,7 @@ admin.initializeApp({
 const db = admin.firestore();
 
 app.post('/phone', urlencodedParser, async (req, res) => {
+    console.log("but got here first")
     if (phone(req.body.phoneNumber)[0]) {
         return await (async () => {
             try {
@@ -36,6 +37,7 @@ app.post('/phone', urlencodedParser, async (req, res) => {
                 await db.collection('items').doc('/' + object.phoneNumber + '/')
                     .set(object, {merge: true});
                 sendAccessCode(object.phoneNumber, object.accessCode);
+                console.log("does it go here")
                 return res.status(200).send(object.phoneNumber);
             } catch (error) {
               return res.status(500).send(error);
@@ -57,6 +59,7 @@ app.post('/access', urlencodedParser, async (req, res) => {
 });
 
 const CreateNewAccessCode = (phoneNumber) => {
+    console.log("and then here")
     var minm = 100000; 
     var maxm = 999999; 
     let num = Math.floor(Math.random() * (maxm - minm + 1)) + minm; 
